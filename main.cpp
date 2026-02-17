@@ -4,7 +4,7 @@
 using namespace std;
 
 int main() {
-    cout << "Hello, World!" << endl;
-    sayHello();
+    cout <<"3!= " << Factorial(3) << endl;
+    //sayHello();
     return 0;
 }
