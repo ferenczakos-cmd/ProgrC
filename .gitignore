@@ -1,0 +1,16 @@
+# Build artifacts
+main
+*.o
+*.obj
+
+# CMake
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+!Makefile
+
+# IDEs
+.vscode/
+.idea/
