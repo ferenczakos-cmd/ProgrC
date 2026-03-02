@@ -1,138 +1,95 @@
 #include <iostream>
-#include "header/functions.h"
+#include <string>
+#include <fstream>
+#include <iomanip>
 
 using namespace std;
 
+enum Gender { FEMALE, MALE, OTHER };
+enum Group { INFORMATICS, ENGINEER, COMPUTER_SCIENCE };
 
+struct Date_t {
+    int year, month, day;
+};
 
-///Maximum keresest, ami visszateriti az indexet
-int maxindex(int a[],int i,int j){
-    if(i==j) return i;
-    int m1=maxindex(a,i,(i+j)/2);
-    int m2=maxindex(a,(i+j)/2+1,j);
-    if(a[m1]>a[m2]){
-        return m1;
-    }
-    return m2;
-}
+struct Student_t {
+    string name;
+    char neptunCode[8];
+    int yearOfStudy;
+    Gender gender;
+    Group group;
+    float labGrade;
+    float theoryExam;
+    float practicalExam;
+    int theoryTestPoints;
+    float finalExamGrade;
+    float totalGrade;
+};
 
-///Minimum kereses, ami visszateriti az erteket
-int minindex(int a[],int i,int j);
-int minertek(int a[],int i,int j){
-    return a[minindex(a,i,j)];
-}
-
- int minindex(int a[],int i,int j){
-    if(i==j) return i;
-    int m1=minindex(a,i,(i+j)/2);
-    int m2=minindex(a,(i+j)/2+1,j);
-    if(a[m1]<a[m2]){
-        return m1;
-    }
-    return m2;
-}
-///Osszegszamitas egy tombben
-int tombosszeg(int a[],int i,int j){
-    if(i==j) return a[i];
-    int m1=tombosszeg(a,i,(i+j)/2);
-    int m2=tombosszeg(a,(i+j)/2+1,j);
-    return m1+m2;
-}
-
-///Szamold meg, hogy hany paratlan szam van
-bool paratlan(int n){
-    return (n%2==0);
-}
-
-int paratlanSzamolas(int a[],int i,int j){
-    if(i==j) return (int)paratlan(a[i]);
-    int m1=paratlanSzamolas(a,i,(i+j)/2);
-    int m2=paratlanSzamolas(a,(i+j)/2+1,j);
-    return m1+m2;
-}
-
-///Hanoi tornyai
-int hanoi(int k, char d,char s,char h){
-    if(k==1){
-        cout<<"("<<s<<","<<d<<")"<<endl;
-    }
-    else{
-        hanoi(k-1,s,h,d);
-        cout<<"("<<s<<","<<d<<")"<<endl;
-        hanoi(k-1,h,d,s);
-    }
-}
-
-///MergeSort
-void oszefesul(int x[], int i, int k, int j);
-void mergesort(int x[],int i,int j){
-    if(i,j){
-        int k=(i+j)/2;
-        mergesort(x,i,k);
-        mergesort(x,k+1,j);
-        oszefesul(x,i,k,j);
-    }
-}
-
-void oszefesul(int x[], int i, int k, int j) {
-    int temp[j - i + 1]; // Segédtömb a rendezett elemeknek
-    int bal = i;         // Mutató a bal oldali részlet elejére
-    int jobb = k + 1;    // Mutató a jobb oldali részlet elejére
-    int m = 0;           // A segédtömb indexe
-
-    // Amíg mindkét térfélen van még elem
-    while (bal <= k && jobb <= j) {
-        if (x[bal] <= x[jobb]) {
-            temp[m++] = x[bal++];
-        } else {
-            temp[m++] = x[jobb++];
-        }
-    }
-
-    // Ha a bal oldali rész marad ki (mert a jobb oldal elfogyott)
-    while (bal <= k) {
-        temp[m++] = x[bal++];
-    }
-
-    // Ha a jobb oldali rész marad ki (mert a bal oldal elfogyott)
-    while (jobb <= j) {
-        temp[m++] = x[jobb++];
-    }
-
-    // Visszamásoljuk az eredeti tömbbe a rendezett elemeket
-    for (int n = 0; n < m; n++) {
-        x[i + n] = temp[n];
-    }
-}
-///BinarisKereses
-int binarisKereses(int x[], int n, int keresett) {
-    int bal = 0;
-    int jobb = n - 1;
-
-    while (bal <= jobb) {
-        int kozep = bal + (jobb - bal) / 2; // Túlcsordulás elleni védelem
-
-        // Megtaláltuk az elemet?
-        if (x[kozep] == keresett) {
-            return kozep;
-        }
-
-        // Ha az elem kisebb, a bal oldali részben keresünk tovább
-        if (x[kozep] > keresett) {
-            jobb = kozep - 1;
-        }
-        // Ha az elem nagyobb, a jobb oldali részben keresünk tovább
-        else {
-            bal = kozep + 1;
-        }
-    }
-
-    // Ha kifutottunk a ciklusból, az elem nincs a tömbben
-    return -1;
-}
 int main() {
-    int a[5]={5,7,3,2,1};
-    cout <<"Hanoi = " << hanoi(3,'a','b','c') << endl;
-    //sayHello();
+    ifstream inputFile("input.txt");
+    
+    if (!inputFile.is_open()) {
+        cerr << "Hiba: Nem sikerult megnyitni az input.txt fajlt!" << endl;
+        return 1;
+    }
+
+    int n;
+    if (!(inputFile >> n)) {
+        cerr << "Hiba: Nem olvashato a diakok szama!" << endl;
+        return 1;
+    }
+
+    if (n < 0 || n > 250) {
+        cerr << "Hiba: A diakok szama 0 es 250 kozott kell legyen!" << endl;
+        return 1;
+    }
+
+    Student_t* students = new Student_t[n];
+
+    for (int i = 0; i < n; i++) {
+        inputFile >> ws;
+        getline(inputFile, students[i].name);
+        inputFile >> students[i].neptunCode;
+        inputFile >> students[i].yearOfStudy;
+        
+        int g_idx;
+        inputFile >> g_idx;
+        students[i].group = static_cast<Group>(g_idx);
+
+        inputFile >> students[i].labGrade;
+        inputFile >> students[i].theoryExam;
+        inputFile >> students[i].practicalExam;
+        inputFile >> students[i].theoryTestPoints;
+
+        float bonus = (students[i].theoryTestPoints / 10.0f); 
+        float adjustedTheory = students[i].theoryExam + bonus;
+
+        students[i].finalExamGrade = (adjustedTheory * 0.4f) + (students[i].practicalExam * 0.6f);
+        students[i].totalGrade = (students[i].labGrade * 0.4f) + (students[i].finalExamGrade * 0.6f);
+    }
+    inputFile.close();
+
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (students[j].name > students[j + 1].name) {
+                Student_t temp = students[j];
+                students[j] = students[j + 1];
+                students[j + 1] = temp;
+            }
+        }
+    }
+
+    cout << left << setw(20) << "Nev" << setw(12) << "Neptun" << setw(15) << "Vizsgajegy" << "Vegleges" << endl;
+    cout << string(60, '-') << endl;
+
+    for (int i = 0; i < n; i++) {
+        cout << left << setw(20) << students[i].name 
+             << setw(12) << students[i].neptunCode
+             << setw(15) << fixed << setprecision(2) << students[i].finalExamGrade 
+             << students[i].totalGrade << endl;
+    }
+
+    delete[] students;
     return 0;
 }
