@@ -75,9 +75,12 @@ void I() {
     }
     cout<<endl<<"A boldog gyerekek szama: "<<boldogGyerek<<endl;
 }
+
+
 // penz -> backtracking kell
 int penz[100][2];int penzdarab=0;
 int tomb[100]={0};
+
 bool igeretes(int index,int target) {
     //penzdarab szamolas
     int penzdarabtomb[100][2]={0};int current=0;
@@ -97,7 +100,17 @@ bool igeretes(int index,int target) {
     }
     //penzdarab szamok osszehasonlitasa
     for (int i=0;i<penzdarab;i++) {
-
+        for (int j=0;j<=current;j++) {
+            // magvan a penzjegypar
+            if (penz[i][0]==penzdarabtomb[j][0]) {
+                if (penz[i][1]<penzdarabtomb[j][1]) {
+                    // tul sokat vettunk el belole
+                    return false;
+                }else {
+                    // mehet tovabb, mert nem ertuk el a limitet
+                }
+            }
+        }
     }
 
     //penzoszeg szamolas
