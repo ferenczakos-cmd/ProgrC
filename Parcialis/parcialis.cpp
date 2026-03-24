@@ -79,12 +79,33 @@ void I() {
 int penz[100][2];int penzdarab=0;
 int tomb[100]={0};
 bool igeretes(int index,int target) {
-    // itt kell tesztelni azt is, hogy nam hassznalunk-e tul sokat egy penzermebol, de egyelore igy konnyeb
-    int osszeg=0;
+    //penzdarab szamolas
+    int penzdarabtomb[100][2]={0};int current=0;
     for (int i=0;i<index;i++) {
-        osszeg+= tomb[i];
+        bool foundit=false;
+        for (int j=0;j<=current;j++) {
+            if (tomb[i]==penzdarabtomb[j][0]) {
+                foundit=true;
+                penzdarabtomb[j][1]++;
+            }
+        }
+        if (!foundit) {
+            penzdarabtomb[current][0]=tomb[i];
+            penzdarabtomb[current][1]=1;
+            current ++;
+        }
     }
-    if (osszeg<=target) {
+    //penzdarab szamok osszehasonlitasa
+    for (int i=0;i<penzdarab;i++) {
+
+    }
+
+    //penzoszeg szamolas
+    int osszeg = 0;
+    for (int i = 0; i < index; i++) {
+        osszeg += tomb[i];
+    }
+    if (osszeg <= target) {
         return true;
     }else {
         return false;
@@ -96,25 +117,39 @@ bool megoldas(int index,int target) {
         osszeg+= tomb[i];
     }
     // csak a pontos megoldast fogadjuk el, valamint itt mar nem kell tesztelni, hogy nem  hassznalunk-e tul sokat egy penzermebol
+
     if (osszeg==target) {
         return true;
     }else {
         return false;
     }
 }
+void tesztIras(int index) {
+    cout<<"Igeretes: ";
+    for (int i=0;i<index;i++) {
+        cout<<tomb[i]<<" ";
+    }
+    cout<<endl;
+}
 void kiir(int index) {
+    cout<<"Megoldas: ";
     for (int i=0;i<index;i++) {
         cout<<tomb[i]<<" ";
     }
     cout<<endl;
 }
 
-
 void backtrack(int index, int target) {
-    for (int i=0;i<=penzdarab;i++) {
+    for (int i=0;i<penzdarab;i++) {
         tomb[index]=penz[i][0];
+
         if (igeretes(index,target)) {
-            if (megoldas(index,target)){kiir(index);}
+            //tesztIras(index);
+            if (megoldas(index,target)) {
+                kiir(index);
+                // nem szabad tovabb menni
+                break;
+            }
             backtrack(index+1,target);
         }else {
             // elhagyuk az agat, nincs tobb meghivas
