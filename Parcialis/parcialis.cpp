@@ -76,8 +76,37 @@ void I() {
     cout<<endl<<"A boldog gyerekek szama: "<<boldogGyerek<<endl;
 }
 // penz -> backtracking kell
-void II() {
+int penz[100][2];int penzdarab=0;
 
+int tomb[100]={0};
+void backtrack(int index, int target) {
+    for (int i=0;i<=penzdarab;i++) {
+        tomb[index]=penz[i][0];
+        // ellenorizzuk, hogy ne hasznalunk-e tul sokat az adott penzermebol
+        if (igeretes()) {
+            if (megoldas()){kiir()}
+            backtrack(index+1,target);
+        }else {
+            // elhagyuk az agat, nincs tobb meghivas
+        }
+
+    }
+}
+
+
+void II() {
+    cout<<"A beolvasott adatok:"<<endl;
+    ifstream f;
+    f.open("penzek.txt");
+    int a,b;
+    while (f>>a>>b){
+        penz[penzdarab][0]=a;penz[penzdarab][1]=b;
+        penzdarab++;
+    }
+    f.close();
+    int target = 786;
+    cout<<"Adja meg, mekkora osszeget kell kifizetni: ";cin>>target;
+    backtrack(0,target);
 }
 
 int main() {
