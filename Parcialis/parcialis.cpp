@@ -77,14 +77,44 @@ void I() {
 }
 // penz -> backtracking kell
 int penz[100][2];int penzdarab=0;
-
 int tomb[100]={0};
+bool igeretes(int index,int target) {
+    // itt kell tesztelni azt is, hogy nam hassznalunk-e tul sokat egy penzermebol, de egyelore igy konnyeb
+    int osszeg=0;
+    for (int i=0;i<index;i++) {
+        osszeg+= tomb[i];
+    }
+    if (osszeg<=target) {
+        return true;
+    }else {
+        return false;
+    }
+}
+bool megoldas(int index,int target) {
+    int osszeg=0;
+    for (int i=0;i<index;i++) {
+        osszeg+= tomb[i];
+    }
+    // csak a pontos megoldast fogadjuk el, valamint itt mar nem kell tesztelni, hogy nem  hassznalunk-e tul sokat egy penzermebol
+    if (osszeg==target) {
+        return true;
+    }else {
+        return false;
+    }
+}
+void kiir(int index) {
+    for (int i=0;i<index;i++) {
+        cout<<tomb[i]<<" ";
+    }
+    cout<<endl;
+}
+
+
 void backtrack(int index, int target) {
     for (int i=0;i<=penzdarab;i++) {
         tomb[index]=penz[i][0];
-        // ellenorizzuk, hogy ne hasznalunk-e tul sokat az adott penzermebol
-        if (igeretes()) {
-            if (megoldas()){kiir()}
+        if (igeretes(index,target)) {
+            if (megoldas(index,target)){kiir(index);}
             backtrack(index+1,target);
         }else {
             // elhagyuk az agat, nincs tobb meghivas
@@ -101,6 +131,7 @@ void II() {
     int a,b;
     while (f>>a>>b){
         penz[penzdarab][0]=a;penz[penzdarab][1]=b;
+        cout<<a<<" "<<b<<endl;
         penzdarab++;
     }
     f.close();
@@ -110,6 +141,6 @@ void II() {
 }
 
 int main() {
-    I();
+    II();
     return 0;
 }
