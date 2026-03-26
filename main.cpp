@@ -8,6 +8,18 @@
 
 using namespace std;
 
+/*
+ * <string.h>
+ * strlen(s)  Visszaadja a string hosszát (a lezáró \0 nélkül).
+ * strcmp(s1, s2)   Összehasonlít két stringet. 0-t ad, ha teljesen egyeznek.
+ * strcpy(dest, src)   Átmásolja a src tartalmát a dest helyre (lehet veszélyes!).
+ * strncpy(dest, src, n)   Biztonságosabb másolás: maximum n karaktert másol át.
+ * strcat(dest, src)   Hozzáfűzi a src-t a dest végéhez (konkatenáció).
+ * strchr(s, c)   Megkeresi a c karakter első előfordulását a stringben.
+ * strstr(s1, s2)   Megkeresi az alstringet (s2) a főstringben (s1).
+ * strtok(s, delim)   Szétbontja a stringet "tokenekre" (szavakra) határolójelek mentén.
+ */
+
 void RunStack () {
     // ----------------- Stack -------------------
     Stack myStack;
