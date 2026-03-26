@@ -1,152 +1,260 @@
 #include <iostream>
-#include <cstdlib>
+#include "header/constants.h"
+#include  "functions/array.cpp"
+#include  "functions/queue.cpp"
+#include "functions/stack.cpp"
+#include "functions/stringQueue.cpp"
 #include <fstream>
-#include  "functions/functions.cpp"
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
+
 using namespace std;
 
-typedef struct {
-int capacity;
-int front;
-int rear;
-int *elements;
-} Queue;
+void RunStack () {
+    // ----------------- Stack -------------------
+    Stack myStack;
+    int capacity = 5;
 
-#define CAR_PLATE_NUMBER_LIMIT 20
-#define MEMORY_ALLOCATION_ERROR_CODE 1
-#define MEMORY_ALLOCATION_ERROR_MESSAGE "Memory allocation failed!\n"
-#define FULL_MESSAGE "Queue is full!\n"
-#define EMPTY_MESSAGE "Queue is empty!\n"
+    // 1. Initialize the stack
+    createStack(capacity, &myStack);
+    printf("Stack created with capacity: %d\n", capacity);
 
+    // 2. Add some elements (Push)
+    printf("Pushing elements: 10, 20, 30\n");
+    push(&myStack, 10);
+    push(&myStack, 20);
+    push(&myStack, 30);
 
-
-void createQueue(int capacity, Queue *queue) {
-queue->capacity = capacity;
-    queue->front = -1;
-    queue->rear = -1;
-
-    queue->elements = (int*)calloc(capacity, sizeof(int));
-
-    if (!queue->elements) {
-        printf(MEMORY_ALLOCATION_ERROR_MESSAGE);
-        exit(MEMORY_ALLOCATION_ERROR_CODE);
+    // 3. Check the top element (Peek)
+    if (!isEmpty(myStack)) {
+        printf("Current top element (peek): %d\n", peek(myStack));
     }
-}
-void destroyQueue(Queue *queue) {
-    if (queue->elements != NULL) {
-        free(queue->elements); 
-        queue->elements = NULL;
+
+    // 4. Check current size
+    printf("Current stack size: %d\n", size(myStack));
+
+    // 5. Remove and print elements (Pop)
+    printf("Popping elements until empty:\n");
+    while (!isEmpty(myStack)) {
+        printf("Popped: %d\n", pop(&myStack));
     }
-    queue->capacity = 0;
-    queue->front = -1;
-    queue->rear = -1;
-}
-bool isFull(Queue queue) {
-    return queue.rear == queue.capacity - 1;
-}
-bool isEmpty(Queue queue) {
-    return queue.front == -1 && queue.rear == -1;
-}
-void enqueue(Queue *queue,int item) {
-    if(isFull(*queue))
-    {
-        printf(FULL_MESSAGE);
-        return;
+
+    // 6. Final check
+    if (isEmpty(myStack)) {
+        printf("The stack is now empty.\n");
     }
-    //ha az elso elem
-    if(queue->front == -1) {
-    queue->front = 0;
-    }
-    queue->rear++;
-    queue->elements[queue->rear] = item;
+
+    // 7. Clean up memory!
+    destroyStack(&myStack);
+    printf("Stack memory freed.\n");
 }
 
-int dequeue(Queue *queue) {
-    
-    if (isEmpty(*queue)) {
-        printf("%s", EMPTY_MESSAGE);
-        return -1;
-    }
-    int value = queue->elements[queue->front];
-    if (queue->front == queue->rear) {
-        queue->front = -1;
-        queue->rear = -1;
-    } else {
-        queue->front++;
-    }
-    return value;
-}
 
-void display(Queue queue) {
-    if (isEmpty(queue)) {
-        printf("%s", EMPTY_MESSAGE);
-        return;
-    }
-    printf("The elements of the queue:\n");
-    for (int i = queue.front; i <= queue.rear; ++i) {
-        // Changed %s to %d for integers
-        printf("\t- %d\n", queue.elements[i]);
-    }
-    printf("\n");
-}
-
-void I(){
+void RunQueue () {
+    // ---------------- Queue ------------------
     Queue myQueue;
-    createQueue(10,&myQueue);
-    enqueue(&myQueue,1);
-    enqueue(&myQueue,2);
-    enqueue(&myQueue,3);
-    enqueue(&myQueue,4);
-    enqueue(&myQueue,5);
+    int capacity = 5;
+
+    // 1. Sor inicializálása
+    createQueue(capacity, &myQueue);
+    printf("Sor letrehozva %d elemnyi kapacitassal.\n", capacity);
+
+    // 2. Elemek hozzáadása (Enqueue)
+    printf("Elemek hozzaadasa: 10, 20, 30, 40\n");
+    enqueue(&myQueue, 10);
+    enqueue(&myQueue, 20);
+    enqueue(&myQueue, 30);
+    enqueue(&myQueue, 40);
+
+    // 3. A sor tartalmának megjelenítése
+    printf("A sor jelenlegi tartalma: ");
     display(myQueue);
-    ///Next is 10
-    int nextElement = 10;
-    if(nextElement-myQueue.elements[myQueue.front]<=10){
-        myQueue.front ++;
-        enqueue(&myQueue,nextElement);
-    }else{
-        printf("Az elem nem hozzaadhato...\n");
+
+    // 4. Elem kivétele (Dequeue)
+    if (!isEmpty(myQueue)) {
+        int removed = dequeue(&myQueue);
+        printf("Kivett elem: %d\n", removed);
     }
+
+    // 5. Megnézzük, mi maradt benne
+    printf("Tartalom a dequeue utan: ");
     display(myQueue);
-    nextElement = 20;
-    if(nextElement-myQueue.elements[myQueue.front]<=10){
-        myQueue.front ++;
-        enqueue(&myQueue,nextElement);
-    }else{
-        printf("Az elem nem hozzaadhato...\n");
+
+    // 6. "Körbeérés" tesztelése
+    // Ha a sor majdnem tele van, és adunk hozzá újat,
+    // a belső logika (modulo operátor) visszaviszi az indexet az elejére.
+    printf("Tovabbi elemek hozzaadasa...\n");
+    enqueue(&myQueue, 50);
+    enqueue(&myQueue, 60);
+    enqueue(&myQueue, 70);
+
+    display(myQueue);
+
+    if (isFull(myQueue)) {
+        printf("A sor megtelt!\n");
     }
-    display(myQueue);
+
+    // 7. Memória felszabadítása
     destroyQueue(&myQueue);
+    printf("Memoria felszabaditva.\n");
 }
-void II(){
-    Queue myQueue;
-    createQueue(10,&myQueue);
-    enqueue(&myQueue,1);
-    enqueue(&myQueue,3);
-    enqueue(&myQueue,-1);
-    enqueue(&myQueue,-3);
-    enqueue(&myQueue,5);
-    enqueue(&myQueue,3);
-    enqueue(&myQueue,6);
-    enqueue(&myQueue,7);
-    int myMax[10]={0};
-    int window=3;
-    for(int start=myQueue.front;start<=myQueue.rear;start++){
-        for(int current = start; current <= start + window; current++){
-            if(current<myQueue.rear){
-                if(myMax[myQueue.front-start]<myQueue.elements[current]) myMax[myQueue.front-start]=myQueue.elements[current];
-            }else{
-                if(myMax[myQueue.front-start]<myQueue.elements[current%(myQueue.rear)+myQueue.front])myMax[myQueue.front-start]=myQueue.elements[current%(myQueue.rear)+myQueue.front];
+
+
+void RunStringQueue() {
+    // USE stringQueue here
+    StringQueue carQueue;
+    int maxCars = 5;
+
+    // 1. Sor inicializálása
+    createQueue_String(maxCars, &carQueue);
+    printf("Autosor letrehozva (%d hely).\n", maxCars);
+
+    // 2. Rendszámok hozzáadása (Enqueue)
+    printf("Autok erkeznek a mosoba...\n");
+    enqueue_String(&carQueue, "ABC-123");
+    enqueue_String(&carQueue, "XYZ-789");
+    enqueue_String(&carQueue, "HUN-001");
+    enqueue_String(&carQueue, "HUN-002");
+
+    // 3. Sor állapotának ellenőrzése
+    if (isFull_String(carQueue)) {
+        printf("A sor megtelt, nem fer be tobb auto.\n");
+    }
+
+    // 4. Jelenlegi sor kiírása
+    printf("Varakozasi sor: ");
+    display_String(carQueue);
+
+    // 5. Elemek eltávolítása (Dequeue)
+    printf("\nMosashoz behajt: %s\n", dequeue_String(&carQueue));
+    printf("Mosashoz behajt: %s\n", dequeue_String(&carQueue));
+
+    // 6. Új autó érkezik a felszabadult helyre
+    printf("Uj auto erkezik: QWE-456\n");
+    enqueue_String(&carQueue, "QWE-456");
+
+    printf("Aktualis sor: ");
+    display_String(carQueue);
+
+    // 7. Takarítás
+    // Megjegyzés: Ha a dequeue során nem szabadítottuk fel a stringeket
+    // (esetleges dinamikus foglalas eseten), itt kell figyelni.
+    destroyQueue_String(&carQueue);
+    printf("\nProgram vege, memoria felszabaditva.\n");
+
+}
+void RunStringQueueLines() {
+    StringQueue carQueue;
+    int maxCars = 10;
+    createQueue_String(maxCars, &carQueue);
+
+    // 1. Fájl megnyitása olvasásra (ifstream)
+    ifstream inputFile("rendszamok.txt");
+
+    // Ellenőrizzük, sikerült-e megnyitni
+    if (!inputFile.is_open()) {
+        cout << "Hiba: A rendszamok.txt nem talalhato!" << endl;
+        destroyQueue_String(&carQueue);
+        return;
+    }
+
+    cout << "Rendszamok beolvasasa (ifstream)..." << endl;
+
+    string line;
+    // 2. Soronkénti beolvasás
+    while (getline(inputFile, line)) {
+        // Ellenőrizzük, hogy nem üres-e a sor
+        if (!line.empty()) {
+            if (!isFull_String(carQueue)) {
+                // Mivel a sorunk char*-ot var, konvertálnunk kell: line.c_str()
+                enqueue_String(&carQueue, (char*)line.c_str());
+                cout << "Beolvasva: " << line << endl;
+            } else {
+                cout << "A sor megtelt, a tobbi auto varakozik." << endl;
+                break;
             }
         }
     }
-    for(int i=0;i<10;i++){
-        printf("%i ",myMax[i]);
-    }
+
+    // 3. Fájl bezárása (bár az ifstream destruktora magától is megtenné)
+    inputFile.close();
+
+    // 4. Eredmény megjelenítése
+    display_String(carQueue);
+
+    // 5. Takarítás
+    destroyQueue_String(&carQueue);
 }
+
+void RunStringQueueWords() {
+    StringQueue carQueue;
+    int maxCars = 15;
+    createQueue_String(maxCars, &carQueue);
+
+    ifstream inputFile("rendszamok.txt");
+
+    if (!inputFile.is_open()) {
+        cout << "Hiba: A fajlt nem sikerult megnyitni!" << endl;
+        destroyQueue_String(&carQueue);
+        return;
+    }
+
+    cout << "Rendszamok beolvasasa szavankent..." << endl;
+
+    string word;
+    // Az '>>' operátor szóközig, tabig vagy sorvégéig olvas egy szót
+    while (inputFile >> word) {
+        if (!isFull_String(carQueue)) {
+            // Konvertálás string -> char* a C-stílusú függvényhez
+            enqueue_String(&carQueue, (char*)word.c_str());
+            cout << "Hozzaadva: " << word << endl;
+        } else {
+            cout << "A sor megtelt!" << endl;
+            break;
+        }
+    }
+
+    inputFile.close();
+
+    cout << "\nA sor vegleges tartalma:" << endl;
+    display_String(carQueue);
+
+    destroyQueue_String(&carQueue);
+}
+
+int RunArray() {
+    // 1. Creation (Constructor handles memory allocation)
+    IntArray myList(5);
+    std::cout << "Dynamic array created with capacity 5." << std::endl;
+
+    // 2. Inserting elements
+    myList.insertLast(10);
+    myList.insertLast(30);
+    myList.insertFirst(5);      // Array is now: [5, 10, 30]
+    myList.insertAt(2, 20);     // Array is now: [5, 10, 20, 30]
+
+    // 3. Displaying content
+    std::cout << "Current array: ";
+    myList.printArray();
+
+    // 4. Searching and Updating
+    int pos = myList.search(20);
+    if (pos != -1) {
+        std::cout << "Found 20 at index: " << pos << std::endl;
+        myList.update(pos, 25); // Change 20 to 25
+    }
+
+    // 5. Deleting an item
+    std::cout << "Deleting item at index 1..." << std::endl;
+    myList.deleteItemAt(1);     // Removes 10, shifts others left
+
+    // 6. Final state
+    myList.printArray();
+
+    // No need to call a destroy function!
+    // The Destructor (~IntArray) runs automatically when main ends.
+    return 0;
+}
+
 int main() {
-    sayHello();
+
     return 0;
 }
