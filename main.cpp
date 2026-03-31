@@ -1,272 +1,304 @@
 #include <iostream>
+
+#include <ctime>
 #include "header/constants.h"
 #include  "functions/array.cpp"
 #include  "functions/queue.cpp"
 #include "functions/stack.cpp"
 #include "functions/stringQueue.cpp"
 #include <fstream>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
 /*
- * <string.h>
- * strlen(s)  Visszaadja a string hosszát (a lezáró \0 nélkül).
- * strcmp(s1, s2)   Összehasonlít két stringet. 0-t ad, ha teljesen egyeznek.
- * strcpy(dest, src)   Átmásolja a src tartalmát a dest helyre (lehet veszélyes!).
- * strncpy(dest, src, n)   Biztonságosabb másolás: maximum n karaktert másol át.
- * strcat(dest, src)   Hozzáfűzi a src-t a dest végéhez (konkatenáció).
- * strchr(s, c)   Megkeresi a c karakter első előfordulását a stringben.
- * strstr(s1, s2)   Megkeresi az alstringet (s2) a főstringben (s1).
- * strtok(s, delim)   Szétbontja a stringet "tokenekre" (szavakra) határolójelek mentén.
+ * Moho es backtrack -> time
+ *     time_t start = time(nullptr);
+ *     // do the functions
+ *     time_t end   = time(nullptr);
+ *     cout << "Apparently, it's going to take you "<< end - start << " seconds.\n";
  */
 
-void RunStack () {
-    // ----------------- Stack -------------------
-    Stack myStack;
-    int capacity = 5;
 
-    // 1. Initialize the stack
-    createStack(capacity, &myStack);
-    printf("Stack created with capacity: %d\n", capacity);
-
-    // 2. Add some elements (Push)
-    printf("Pushing elements: 10, 20, 30\n");
-    push(&myStack, 10);
-    push(&myStack, 20);
-    push(&myStack, 30);
-
-    // 3. Check the top element (Peek)
-    if (!isEmpty(myStack)) {
-        printf("Current top element (peek): %d\n", peek(myStack));
-    }
-
-    // 4. Check current size
-    printf("Current stack size: %d\n", size(myStack));
-
-    // 5. Remove and print elements (Pop)
-    printf("Popping elements until empty:\n");
-    while (!isEmpty(myStack)) {
-        printf("Popped: %d\n", pop(&myStack));
-    }
-
-    // 6. Final check
-    if (isEmpty(myStack)) {
-        printf("The stack is now empty.\n");
-    }
-
-    // 7. Clean up memory!
-    destroyStack(&myStack);
-    printf("Stack memory freed.\n");
-}
+//
+int n, limit_sum;
 
 
-void RunQueue () {
-    // ---------------- Queue ------------------
-    Queue myQueue;
-    int capacity = 5;
+int szamjegyek[20];      // A 3. feladathoz
 
-    // 1. Sor inicializálása
-    createQueue(capacity, &myQueue);
-    printf("Sor letrehozva %d elemnyi kapacitassal.\n", capacity);
-
-    // 2. Elemek hozzáadása (Enqueue)
-    printf("Elemek hozzaadasa: 10, 20, 30, 40\n");
-    enqueue(&myQueue, 10);
-    enqueue(&myQueue, 20);
-    enqueue(&myQueue, 30);
-    enqueue(&myQueue, 40);
-
-    // 3. A sor tartalmának megjelenítése
-    printf("A sor jelenlegi tartalma: ");
-    display(myQueue);
-
-    // 4. Elem kivétele (Dequeue)
-    if (!isEmpty(myQueue)) {
-        int removed = dequeue(&myQueue);
-        printf("Kivett elem: %d\n", removed);
-    }
-
-    // 5. Megnézzük, mi maradt benne
-    printf("Tartalom a dequeue utan: ");
-    display(myQueue);
-
-    // 6. "Körbeérés" tesztelése
-    // Ha a sor majdnem tele van, és adunk hozzá újat,
-    // a belső logika (modulo operátor) visszaviszi az indexet az elejére.
-    printf("Tovabbi elemek hozzaadasa...\n");
-    enqueue(&myQueue, 50);
-    enqueue(&myQueue, 60);
-    enqueue(&myQueue, 70);
-
-    display(myQueue);
-
-    if (isFull(myQueue)) {
-        printf("A sor megtelt!\n");
-    }
-
-    // 7. Memória felszabadítása
-    destroyQueue(&myQueue);
-    printf("Memoria felszabaditva.\n");
-}
-
-
-void RunStringQueue() {
-    // USE stringQueue here
-    StringQueue carQueue;
-    int maxCars = 5;
-
-    // 1. Sor inicializálása
-    createQueue_String(maxCars, &carQueue);
-    printf("Autosor letrehozva (%d hely).\n", maxCars);
-
-    // 2. Rendszámok hozzáadása (Enqueue)
-    printf("Autok erkeznek a mosoba...\n");
-    enqueue_String(&carQueue, "ABC-123");
-    enqueue_String(&carQueue, "XYZ-789");
-    enqueue_String(&carQueue, "HUN-001");
-    enqueue_String(&carQueue, "HUN-002");
-
-    // 3. Sor állapotának ellenőrzése
-    if (isFull_String(carQueue)) {
-        printf("A sor megtelt, nem fer be tobb auto.\n");
-    }
-
-    // 4. Jelenlegi sor kiírása
-    printf("Varakozasi sor: ");
-    display_String(carQueue);
-
-    // 5. Elemek eltávolítása (Dequeue)
-    printf("\nMosashoz behajt: %s\n", dequeue_String(&carQueue));
-    printf("Mosashoz behajt: %s\n", dequeue_String(&carQueue));
-
-    // 6. Új autó érkezik a felszabadult helyre
-    printf("Uj auto erkezik: QWE-456\n");
-    enqueue_String(&carQueue, "QWE-456");
-
-    printf("Aktualis sor: ");
-    display_String(carQueue);
-
-    // 7. Takarítás
-    // Megjegyzés: Ha a dequeue során nem szabadítottuk fel a stringeket
-    // (esetleges dinamikus foglalas eseten), itt kell figyelni.
-    destroyQueue_String(&carQueue);
-    printf("\nProgram vege, memoria felszabaditva.\n");
-
-}
-void RunStringQueueLines() {
-    StringQueue carQueue;
-    int maxCars = 10;
-    createQueue_String(maxCars, &carQueue);
-
-    // 1. Fájl megnyitása olvasásra (ifstream)
-    ifstream inputFile("rendszamok.txt");
-
-    // Ellenőrizzük, sikerült-e megnyitni
-    if (!inputFile.is_open()) {
-        cout << "Hiba: A rendszamok.txt nem talalhato!" << endl;
-        destroyQueue_String(&carQueue);
+// 1 --------------------------------------------------
+int x[100];
+void moho_megoldas_1(int n) {
+    if (n > 10) {
+        cout << "Nincs megoldas (max 10 kulonbozo szamjegy van)";
         return;
     }
 
-    cout << "Rendszamok beolvasasa (ifstream)..." << endl;
+    // 1. lépés: Az első számjegy nem lehet 0. A legkisebb lehetséges az 1.
+    x[1] = 1;
 
-    string line;
-    // 2. Soronkénti beolvasás
-    while (getline(inputFile, line)) {
-        // Ellenőrizzük, hogy nem üres-e a sor
-        if (!line.empty()) {
-            if (!isFull_String(carQueue)) {
-                // Mivel a sorunk char*-ot var, konvertálnunk kell: line.c_str()
-                enqueue_String(&carQueue, (char*)line.c_str());
-                cout << "Beolvasva: " << line << endl;
-            } else {
-                cout << "A sor megtelt, a tobbi auto varakozik." << endl;
-                break;
-            }
-        }
+    // 2. lépés: Minden további k-adik helyre a lehető legkisebb
+    // olyan számot tesszük, ami nagyobb az előzőnél (x[k-1] + 1).
+    for (int k = 2; k <= n; k++) {
+        x[k] = x[k - 1] + 1;
     }
 
-    // 3. Fájl bezárása (bár az ifstream destruktora magától is megtenné)
-    inputFile.close();
-
-    // 4. Eredmény megjelenítése
-    display_String(carQueue);
-
-    // 5. Takarítás
-    destroyQueue_String(&carQueue);
+    // Kiírás
+    for (int i = 1; i <= n; i++) {
+        cout << x[i];
+    }
+    cout << endl;
 }
 
-void RunStringQueueWords() {
-    StringQueue carQueue;
-    int maxCars = 15;
-    createQueue_String(maxCars, &carQueue);
-
-    ifstream inputFile("rendszamok.txt");
-
-    if (!inputFile.is_open()) {
-        cout << "Hiba: A fajlt nem sikerult megnyitni!" << endl;
-        destroyQueue_String(&carQueue);
-        return;
-    }
-
-    cout << "Rendszamok beolvasasa szavankent..." << endl;
-
-    string word;
-    // Az '>>' operátor szóközig, tabig vagy sorvégéig olvas egy szót
-    while (inputFile >> word) {
-        if (!isFull_String(carQueue)) {
-            // Konvertálás string -> char* a C-stílusú függvényhez
-            enqueue_String(&carQueue, (char*)word.c_str());
-            cout << "Hozzaadva: " << word << endl;
-        } else {
-            cout << "A sor megtelt!" << endl;
-            break;
-        }
-    }
-
-    inputFile.close();
-
-    cout << "\nA sor vegleges tartalma:" << endl;
-    display_String(carQueue);
-
-    destroyQueue_String(&carQueue);
+void kiir_1(int k) {
+    for (int i = 1; i <= k; i++) cout << x[i];
+    cout << " ";
 }
 
-int RunArray() {
-    // 1. Creation (Constructor handles memory allocation)
-    IntArray myList(5);
-    std::cout << "Dynamic array created with capacity 5." << std::endl;
+bool igeretes_1(int k) {
+    if (k > 1 && x[k] <= x[k - 1]) return false;
+    if (x[1]==0) return false;
+    return true;
+}
 
-    // 2. Inserting elements
-    myList.insertLast(10);
-    myList.insertLast(30);
-    myList.insertFirst(5);      // Array is now: [5, 10, 30]
-    myList.insertAt(2, 20);     // Array is now: [5, 10, 20, 30]
+void back_1(int k) {
+    for (int i = 0; i <= 9; i++) {
+        x[k] = i;
+        if (igeretes_1(k)) {
+            if (k == n) kiir_1(k); // megoldas
+            else back_1(k + 1);
+        }
 
-    // 3. Displaying content
-    std::cout << "Current array: ";
-    myList.printArray();
-
-    // 4. Searching and Updating
-    int pos = myList.search(20);
-    if (pos != -1) {
-        std::cout << "Found 20 at index: " << pos << std::endl;
-        myList.update(pos, 25); // Change 20 to 25
     }
+}
 
-    // 5. Deleting an item
-    std::cout << "Deleting item at index 1..." << std::endl;
-    myList.deleteItemAt(1);     // Removes 10, shifts others left
+// 2 --------------------------------------------------
+int szo_indexek[10];
+char mgh[] = "aeiou";
+void kiir_2() {
+    for (int i = 1; i <= 5; i++) cout << mgh[szo_indexek[i]];
+    cout << " ";
+}
 
-    // 6. Final state
-    myList.printArray();
+void back_2(int k) {
+    for (int i = 0; i < 5; i++) {
+        szo_indexek[k] = i;
+        if (k == 5) kiir_2();
+        else back_2(k + 1);
+    }
+}
 
-    // No need to call a destroy function!
-    // The Destructor (~IntArray) runs automatically when main ends.
-    return 0;
+// 3 --------------------------------------------------
+void kiir_3(int k) {
+    for (int i = 1; i <= k; i++) cout << szamjegyek[i];
+    cout << " ";
+}
+
+bool igeretes_3(int k) {
+    if (k == 1 && szamjegyek[k] == 0) return false;
+    int osszeg = 0;
+    for (int i = 1; i <= k; i++) osszeg += szamjegyek[i];
+    return osszeg < limit_sum;
+}
+
+void back_3(int k, int max_h) {
+    for (int i = 0; i <= 9; i++) {
+        szamjegyek[k] = i;
+        if (igeretes_3(k)) {
+            kiir_3(k);
+            if (k < max_h) back_3(k + 1, max_h);
+        }
+    }
+}
+
+
+// 4 --------------------------------------------------
+int z[4];
+const char* szinek[] = {"", "feher", "fekete", "piros", "kek", "zold", "sarga"};
+
+void kiir_zaszlo() {
+    for (int i = 1; i <= 3; i++) cout << szinek[z[i]] << " ";
+    cout << endl;
+}
+
+bool igeretes_zaszlo(int k) {
+    for (int i = 1; i < k; i++) if (z[i] == z[k]) return false;
+    if (k == 2 && z[k] != 1 && z[k] != 2) return false;
+    return true;
+}
+
+bool megoldas_zaszlo(int k){
+    return k==3;
+}
+
+void back_zaszlo(int k) {
+    for (int i = 1; i <= 6; i++) {
+        z[k] = i;
+        if (igeretes_zaszlo(k)) {
+            if (megoldas_zaszlo(k)) kiir_zaszlo();
+            else back_zaszlo(k + 1);
+        }
+    }
+}
+
+// 5 --------------------------------------------------
+int n_ertek, p_darab;
+int t[100];
+
+void kiir_osszeg() {
+    for (int i = 1; i <= p_darab; i++) cout << t[i] << (i == p_darab ? "" : "+");
+    cout << endl;
+}
+
+bool igeretes_osszeg(int k) {
+    int s = 0;
+    for (int i = 1; i <= k; i++) s += t[i];
+    if (s > n_ertek) return false;
+
+    if (k == p_darab && s != n_ertek) return false;
+    return true;
+}
+
+bool megoldas_osszeg(int k){
+    return k == p_darab;
+}
+
+void back_osszeg(int k) {
+    for (int i = 1; i <= n_ertek; i++) {
+        t[k] = i;
+        if (igeretes_osszeg(k)) {
+            if (megoldas_osszeg(k)) kiir_osszeg();
+            else back_osszeg(k + 1);
+        }
+    }
+}
+
+// 6 --------------------------------------------------
+int n_osszes, p_nok, k_tag, q_no_kell;
+int d[100];
+
+void kiir_delegacio() {
+    for (int i = 1; i <= k_tag; i++) cout << d[i] << " ";
+    cout << endl;
+}
+
+bool igeretes_delegacio(int k) {
+    int db_no = 0;
+    for (int i = 1; i <= k; i++) {
+        if (d[i] <= p_nok) db_no++;
+    }
+    return db_no <= q_no_kell;
+}
+
+void back_delegacio(int k) {
+    for (int i = 1; i <= n_osszes; i++) {
+        d[k] = i;
+        if (igeretes_delegacio(k)) {
+            if (k == k_tag) kiir_delegacio();
+            else back_delegacio(k + 1);
+        }
+    }
+}
+
+// 7 --------------------------------------------------
+int v[4]; // v[1]=x, v[2]=y, v[3]=z
+
+void kiir_egyenlet() {
+    cout << "x=" << v[1] << ", y=" << v[2] << ", z=" << v[3] << endl;
+}
+
+bool igeretes_egyenlet(int k) {
+    if (k == 3) return (3 * v[1] + v[2] + 4 * v[1] * v[3] == 100);
+    if (3 * v[1] > 100) return false;
+    return true;
+}
+
+void back_egyenlet(int k) {
+    for (int i = 0; i <= 100; i++) {
+        v[k] = i;
+        if (igeretes_egyenlet(k)) {
+            if (k == 3) kiir_egyenlet();
+            else back_egyenlet(k + 1);
+        }
+        if (k == 1 && 3 * i > 100) break;
+    }
 }
 
 int main() {
+    int valasztas;
+    while(true){
+        cout << "Valassz feladatot!\n 1 - novekvo sorozatok\n 2 - mgh.szavak\n 3 - szamjegyosszeg \n 4 - zaszloszinek\n 5 - osszegre bontas\n 6 - delegacio \n 7 - fugveny megoldas\n 0 - kilepes\n A muvelet kodja: ";
+        cin >> valasztas;
 
-    return 0;
+        if(valasztas == 0 ) return 0;
+
+        if (valasztas == 1) {
+            cout << "Milyen hosszu novekvo sorozatokat szeretnel (n)? ";
+            cin >> n;
+            valasztas = -1;
+            while (true) {
+                cout<<"Valassz megoldas tipust: \n 1 - Backtrack \n 2 - Greedy\n";
+                cin >> valasztas;
+                if (valasztas == 1) {
+                    auto start = high_resolution_clock::now();
+                    back_1(1);
+                    auto end = high_resolution_clock::now();
+                    auto duration = duration_cast<microseconds>(end - start);
+                    cout << "\nEltelt ido: " << duration.count() << " ms" << endl;
+                    break;
+                }
+                if (valasztas == 2) {
+                    auto start = high_resolution_clock::now();
+                    moho_megoldas_1(n);
+                    auto end = high_resolution_clock::now();
+                    auto duration = duration_cast<microseconds>(end - start);
+                    cout << "\nEltelt ido: " << duration.count() << " ms" << endl;
+                    break;
+                }
+            }
+
+        }
+        else if (valasztas == 2) {
+            cout << "Az osszes 5 betus maganhangzos szo:\n";
+            back_2(1);
+        }
+        else if (valasztas == 3) {
+            cout << "Add meg a maximalis osszeget (sum): ";
+            cin >> limit_sum;
+            cout << "Add meg a szamjegyek maximalis szamat: ";
+            int m; cin >> m;
+            back_3(1, m);
+        }
+        else if(valasztas == 4){
+            cout << "A lehetseges zaszlok:\n";
+            back_zaszlo(1);
+        }
+        else if(valasztas == 5){
+            cout << "Addd meg, melyik szamot bontsam fel:";
+            cin >> n_ertek;
+            cout << "Add meg, hany szamra bontsam fel:";
+            cin >> p_darab;
+            back_osszeg(1);
+        }
+        else if(valasztas == 6){
+            cout << "Add meg, hany tag van a delegacioban:";
+            cin >> n_osszes;
+            cout << "Add meg, ebbol az elso hany no:";
+            cin >> p_nok;
+            cout << "Add meg, mekkora delegaciot alitsunk ossze:";
+            cin>>k_tag;
+            cout << "Add meg, hany no legyen a delegacioban:";
+            cin >> q_no_kell;
+            back_delegacio(1);
+
+        }
+        else if(valasztas == 7){
+            back_egyenlet(1);
+        }
+        else {
+            cout << "Ervenytelen valasztas!";
+        }
+        cout << endl;
+    }
 }
