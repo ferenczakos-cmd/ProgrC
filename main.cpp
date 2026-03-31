@@ -12,293 +12,140 @@
 using namespace std;
 using namespace std::chrono;
 
-/*
- * Moho es backtrack -> time
- *     time_t start = time(nullptr);
- *     // do the functions
- *     time_t end   = time(nullptr);
- *     cout << "Apparently, it's going to take you "<< end - start << " seconds.\n";
- */
+// Statikus méretkorlátok
+const int MAX_N = 1001;
+const int MAX_K = 1001;
+
+// Globális tömbök
+int suly[MAX_N];
+int ertek[MAX_N];
+int dp[MAX_N][MAX_K];
+int kivalasztott_indexek[MAX_N];
+
+// Mohó módszerhez szükséges segédtömbök
+int eredeti_index[MAX_N];
+double egyseg_ertek[MAX_N];
 
 
-//
-int n, limit_sum;
+void GenerateInput() {
+    ofstream fki("bemenet.txt");
 
+    int N = 1000;  // Maximális tárgyszám
+    int K = 500;   // Hátizsák kapacitása
 
-int szamjegyek[20];      // A 3. feladathoz
+    fki << N << " " << K << endl;
 
-// 1 --------------------------------------------------
-int x[100];
-void moho_megoldas_1(int n) {
-    if (n > 10) {
-        cout << "Nincs megoldas (max 10 kulonbozo szamjegy van)";
+    srand(time(0));
+
+    for (int i = 0; i < N; i++) {
+        int s = rand() % 50 + 1;  // Súly: 1 és 50 között
+        int e = rand() % 100 + 1; // Érték: 1 és 100 között
+        fki << s << " " << e << endl;
+    }
+
+    fki.close();
+    cout << "A bemenet.txt elkeszult "<<N<<" tárggyal!" << endl;
+}
+
+int maximalis(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+void backtrack() {
+    ifstream f("bemenet.txt");
+    if (!f.is_open()) {
+        cout << "Hiba: A bemenet.txt nem talalhato!" << endl;
         return;
     }
 
-    // 1. lépés: Az első számjegy nem lehet 0. A legkisebb lehetséges az 1.
-    x[1] = 1;
+    int N, K;
+    if (!(f >> N >> K)) return;
 
-    // 2. lépés: Minden további k-adik helyre a lehető legkisebb
-    // olyan számot tesszük, ami nagyobb az előzőnél (x[k-1] + 1).
-    for (int k = 2; k <= n; k++) {
-        x[k] = x[k - 1] + 1;
+    for (int i = 1; i <= N; i++) {
+        f >> suly[i] >> ertek[i];
     }
+    f.close();
 
-    // Kiírás
-    for (int i = 1; i <= n; i++) {
-        cout << x[i];
-    }
-    cout << endl;
-}
+    // DP tábla nullázása
+    for(int i = 0; i <= N; i++) for(int j = 0; j <= K; j++) dp[i][j] = 0;
 
-void kiir_1(int k) {
-    for (int i = 1; i <= k; i++) cout << x[i];
-    cout << " ";
-}
-
-bool igeretes_1(int k) {
-    if (k > 1 && x[k] <= x[k - 1]) return false;
-    if (x[1]==0) return false;
-    return true;
-}
-
-void back_1(int k) {
-    for (int i = 0; i <= 9; i++) {
-        x[k] = i;
-        if (igeretes_1(k)) {
-            if (k == n) kiir_1(k); // megoldas
-            else back_1(k + 1);
+    for (int i = 1; i <= N; i++) {
+        for (int j = 0; j <= K; j++) {
+            if (suly[i] <= j) {
+                dp[i][j] = maximalis(dp[i - 1][j], dp[i - 1][j - suly[i]] + ertek[i]);
+            } else {
+                dp[i][j] = dp[i - 1][j];
+            }
         }
-
     }
-}
 
-// 2 --------------------------------------------------
-int szo_indexek[10];
-char mgh[] = "aeiou";
-void kiir_2() {
-    for (int i = 1; i <= 5; i++) cout << mgh[szo_indexek[i]];
-    cout << " ";
-}
+    cout << "\n=== BackTrack  ===" << endl;
+    cout << "Osszertek: " << dp[N][K] << endl;
+    //cout << "Kivalasztott targyak:" << endl;
 
-void back_2(int k) {
-    for (int i = 0; i < 5; i++) {
-        szo_indexek[k] = i;
-        if (k == 5) kiir_2();
-        else back_2(k + 1);
-    }
-}
-
-// 3 --------------------------------------------------
-void kiir_3(int k) {
-    for (int i = 1; i <= k; i++) cout << szamjegyek[i];
-    cout << " ";
-}
-
-bool igeretes_3(int k) {
-    if (k == 1 && szamjegyek[k] == 0) return false;
-    int osszeg = 0;
-    for (int i = 1; i <= k; i++) osszeg += szamjegyek[i];
-    return osszeg < limit_sum;
-}
-
-void back_3(int k, int max_h) {
-    for (int i = 0; i <= 9; i++) {
-        szamjegyek[k] = i;
-        if (igeretes_3(k)) {
-            kiir_3(k);
-            if (k < max_h) back_3(k + 1, max_h);
+    int maradek_kapa = K;
+    for (int i = N; i > 0; i--) {
+        if (dp[i][maradek_kapa] != dp[i - 1][maradek_kapa]) {
+            //cout << " - " << i << ". targy (Suly: " << suly[i] << ", Ertek: " << ertek[i] << ")" << endl;
+            maradek_kapa -= suly[i];
         }
     }
 }
 
+void greedy() {
+    ifstream fbe("bemenet.txt");
+    if (!fbe.is_open()) return;
 
-// 4 --------------------------------------------------
-int z[4];
-const char* szinek[] = {"", "feher", "fekete", "piros", "kek", "zold", "sarga"};
+    int N, K;
+    if (!(fbe >> N >> K)) return;
 
-void kiir_zaszlo() {
-    for (int i = 1; i <= 3; i++) cout << szinek[z[i]] << " ";
-    cout << endl;
-}
+    for (int i = 1; i <= N; i++) {
+        fbe >> suly[i] >> ertek[i];
+        eredeti_index[i] = i;
+        egyseg_ertek[i] = (double)ertek[i] / suly[i];
+    }
+    fbe.close();
 
-bool igeretes_zaszlo(int k) {
-    for (int i = 1; i < k; i++) if (z[i] == z[k]) return false;
-    if (k == 2 && z[k] != 1 && z[k] != 2) return false;
-    return true;
-}
-
-bool megoldas_zaszlo(int k){
-    return k==3;
-}
-
-void back_zaszlo(int k) {
-    for (int i = 1; i <= 6; i++) {
-        z[k] = i;
-        if (igeretes_zaszlo(k)) {
-            if (megoldas_zaszlo(k)) kiir_zaszlo();
-            else back_zaszlo(k + 1);
+    // Buborékrendezés (egységnyi érték szerint csökkenő)
+    for (int i = 1; i < N; i++) {
+        for (int j = 1; j <= N - i; j++) {
+            if (egyseg_ertek[j] < egyseg_ertek[j + 1]) {
+                swap(egyseg_ertek[j], egyseg_ertek[j+1]);
+                swap(suly[j], suly[j+1]);
+                swap(ertek[j], ertek[j+1]);
+                swap(eredeti_index[j], eredeti_index[j+1]);
+            }
         }
     }
-}
 
-// 5 --------------------------------------------------
-int n_ertek, p_darab;
-int t[100];
+    int akt_suly = 0;
+    int ossz_e = 0;
 
-void kiir_osszeg() {
-    for (int i = 1; i <= p_darab; i++) cout << t[i] << (i == p_darab ? "" : "+");
-    cout << endl;
-}
-
-bool igeretes_osszeg(int k) {
-    int s = 0;
-    for (int i = 1; i <= k; i++) s += t[i];
-    if (s > n_ertek) return false;
-
-    if (k == p_darab && s != n_ertek) return false;
-    return true;
-}
-
-bool megoldas_osszeg(int k){
-    return k == p_darab;
-}
-
-void back_osszeg(int k) {
-    for (int i = 1; i <= n_ertek; i++) {
-        t[k] = i;
-        if (igeretes_osszeg(k)) {
-            if (megoldas_osszeg(k)) kiir_osszeg();
-            else back_osszeg(k + 1);
+    cout << "\n=== Moho modszer  ===" << endl;
+    //cout << "Kivalasztott targyak:" << endl;
+    for (int i = 1; i <= N; i++) {
+        if (akt_suly + suly[i] <= K) {
+            akt_suly += suly[i];
+            ossz_e += ertek[i];
+            //cout << " - " << eredeti_index[i] << ". targy (Suly: " << suly[i] << ", Ertek: " << ertek[i] << ")" << endl;
         }
     }
-}
-
-// 6 --------------------------------------------------
-int n_osszes, p_nok, k_tag, q_no_kell;
-int d[100];
-
-void kiir_delegacio() {
-    for (int i = 1; i <= k_tag; i++) cout << d[i] << " ";
-    cout << endl;
-}
-
-bool igeretes_delegacio(int k) {
-    int db_no = 0;
-    for (int i = 1; i <= k; i++) {
-        if (d[i] <= p_nok) db_no++;
-    }
-    return db_no <= q_no_kell;
-}
-
-void back_delegacio(int k) {
-    for (int i = 1; i <= n_osszes; i++) {
-        d[k] = i;
-        if (igeretes_delegacio(k)) {
-            if (k == k_tag) kiir_delegacio();
-            else back_delegacio(k + 1);
-        }
-    }
-}
-
-// 7 --------------------------------------------------
-int v[4]; // v[1]=x, v[2]=y, v[3]=z
-
-void kiir_egyenlet() {
-    cout << "x=" << v[1] << ", y=" << v[2] << ", z=" << v[3] << endl;
-}
-
-bool igeretes_egyenlet(int k) {
-    if (k == 3) return (3 * v[1] + v[2] + 4 * v[1] * v[3] == 100);
-    if (3 * v[1] > 100) return false;
-    return true;
-}
-
-void back_egyenlet(int k) {
-    for (int i = 0; i <= 100; i++) {
-        v[k] = i;
-        if (igeretes_egyenlet(k)) {
-            if (k == 3) kiir_egyenlet();
-            else back_egyenlet(k + 1);
-        }
-        if (k == 1 && 3 * i > 100) break;
-    }
+    cout << "Osszertek: " << ossz_e << " (Osszsuly: " << akt_suly << "/" << K << ")" << endl;
 }
 
 int main() {
-    int valasztas;
-    while(true){
-        cout << "Valassz feladatot!\n 1 - novekvo sorozatok\n 2 - mgh.szavak\n 3 - szamjegyosszeg \n 4 - zaszloszinek\n 5 - osszegre bontas\n 6 - delegacio \n 7 - fugveny megoldas\n 0 - kilepes\n A muvelet kodja: ";
-        cin >> valasztas;
+    GenerateInput();
+    auto start = high_resolution_clock::now();
+    backtrack();
+    auto end = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(end - start);
+    cout << "\nEltelt ido: " << duration.count() << " ms" << endl;
 
-        if(valasztas == 0 ) return 0;
+    start = high_resolution_clock::now();
+    greedy();
+    end = high_resolution_clock::now();
+     duration = duration_cast<microseconds>(end - start);
+    cout << "\nEltelt ido: " << duration.count() << " ms" << endl;
 
-        if (valasztas == 1) {
-            cout << "Milyen hosszu novekvo sorozatokat szeretnel (n)? ";
-            cin >> n;
-            valasztas = -1;
-            while (true) {
-                cout<<"Valassz megoldas tipust: \n 1 - Backtrack \n 2 - Greedy\n";
-                cin >> valasztas;
-                if (valasztas == 1) {
-                    auto start = high_resolution_clock::now();
-                    back_1(1);
-                    auto end = high_resolution_clock::now();
-                    auto duration = duration_cast<microseconds>(end - start);
-                    cout << "\nEltelt ido: " << duration.count() << " ms" << endl;
-                    break;
-                }
-                if (valasztas == 2) {
-                    auto start = high_resolution_clock::now();
-                    moho_megoldas_1(n);
-                    auto end = high_resolution_clock::now();
-                    auto duration = duration_cast<microseconds>(end - start);
-                    cout << "\nEltelt ido: " << duration.count() << " ms" << endl;
-                    break;
-                }
-            }
-
-        }
-        else if (valasztas == 2) {
-            cout << "Az osszes 5 betus maganhangzos szo:\n";
-            back_2(1);
-        }
-        else if (valasztas == 3) {
-            cout << "Add meg a maximalis osszeget (sum): ";
-            cin >> limit_sum;
-            cout << "Add meg a szamjegyek maximalis szamat: ";
-            int m; cin >> m;
-            back_3(1, m);
-        }
-        else if(valasztas == 4){
-            cout << "A lehetseges zaszlok:\n";
-            back_zaszlo(1);
-        }
-        else if(valasztas == 5){
-            cout << "Addd meg, melyik szamot bontsam fel:";
-            cin >> n_ertek;
-            cout << "Add meg, hany szamra bontsam fel:";
-            cin >> p_darab;
-            back_osszeg(1);
-        }
-        else if(valasztas == 6){
-            cout << "Add meg, hany tag van a delegacioban:";
-            cin >> n_osszes;
-            cout << "Add meg, ebbol az elso hany no:";
-            cin >> p_nok;
-            cout << "Add meg, mekkora delegaciot alitsunk ossze:";
-            cin>>k_tag;
-            cout << "Add meg, hany no legyen a delegacioban:";
-            cin >> q_no_kell;
-            back_delegacio(1);
-
-        }
-        else if(valasztas == 7){
-            back_egyenlet(1);
-        }
-        else {
-            cout << "Ervenytelen valasztas!";
-        }
-        cout << endl;
-    }
+    return 0;
 }
