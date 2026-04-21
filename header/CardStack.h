@@ -1,5 +1,5 @@
-#ifndef STACK_STACK_H
-#define STACK_STACK_H
+#ifndef STACK_CARDSTACK_H
+#define STACK_CARDSTACK_H
 #include <stdbool.h>
 
 /**
@@ -25,36 +25,36 @@ typedef struct {
     int capacity;
     int top;
     Card_t **elements;
-} Stack;
+} CardStack;
 
 /**
 * Inicializálja a verem kapacitását és tetejét.
 */
-void createStack(int capacity, Stack * stack);
+void createCardStack(int capacity, CardStack * stack);
 
 /**
 * Felszabadítja a veremhez lefoglalt memóriát.
 */
-void destroyStack(Stack* stack);
+void destroyCardStack(CardStack* stack);
 
-bool isFull(Stack stack);
-bool isEmpty(Stack stack);
+bool isCardStackFull(Stack stack);
+bool isCardStackEmpty(Stack stack);
 
 /**
 * Új kártya pointert helyez a verembe.
 */
-void push(Stack* stack, Card_t* item);
+void CardStackPush(CardStack* stack, Card_t* item);
 
 /**
 * Eltávolítja a verem tetején lévő kártya pointert.
 */
-Card_t* pop(Stack* stack);
+Card_t* CardStackPop(CardStack* stack);
 
 /**
 * Visszaadja a verem tetején lévő kártya pointert.
 */
-Card_t* peek(Stack stack);
+Card_t* CardStackPeek(CardStack stack);
 
-int size(Stack stack);
+int size(CardStack stack);
 
 #endif
