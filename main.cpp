@@ -3,102 +3,112 @@
 #include "header/constants.h"
 #include  "functions/array.cpp"
 #include  "functions/queue.cpp"
-#include "functions/stack.cpp"
+//#include "functions/stack.cpp"
+#include "functions/CardStack.cpp".
 #include "functions/stringQueue.cpp"
 #include "functions/List.cpp"
 #include <fstream>
 
 
+
 using namespace std;
 
-// 1. FELADAT: Timestamp ellenőrzés
-void checkTimestamps(int timestamps[], int n, int window, int limit) {
-    Queue q;
-    createQueue(n + 1, &q); // Elég nagy sor a kéréseknek
-
-    printf("Rate Limiter vizsgalat:\n");
-    for (int i = 0; i < n; i++) {
-        int current = timestamps[i];
-
-        // Megnézzük, mi volt a sorban az 5-tel ezelőtti elem (limit)
-        // Ha a sorban már van legalább 'limit' darab elem
-        int count = 0;
-        if (!isEmpty(q)) {
-            if (q.rear >= q.front) count = q.rear - q.front + 1;
-            else count = (q.capacity - q.front) + (q.rear + 1);
-        }
-
-        if (count < limit) {
-            // Ha még nincs tele a limit, simán hozzáadjuk
-            enqueue(&q, current);
-            printf("Timestamp %d: OK (Hozzaadva)\n", current);
-        } else {
-            // Ha már van bent legalább 'limit', megnézzük a legelsőt a sorban
-            int oldestInLimit = q.elements[q.front];
-            if (current - oldestInLimit >= window) {
-                // Ha eltelt 'window' mp az 'limit'-tel ezelőtti óta, mehet be az új
-                //dequeue(&q); // A régit kivesszük, hogy tartsuk a limitet
-                enqueue(&q, current);
-                printf("Timestamp %d: OK (Hozzaadva)\n", current);
-            } else {
-                // Ha túl sűrűn jöttek, nem adjuk hozzá a sorhoz
-                printf("Timestamp %d: ELUTASITVA (Tul sok keres)\n", current);
-            }
-        }
-        display(q);
+void printStackDestructive(Stack *stack) {
+    if (isEmpty(*stack)) {
+        printf("A verem ures.\n");
+        return;
     }
-    destroyQueue(&q);
+
+    Stack tempStack;
+    createStack(stack->capacity, &tempStack);
+
+    printf("--- Verem tartalma ---\n");
+
+    // 1. & 2. Kipakolunk az eredetiből és kiírunk
+    while (!isEmpty(*stack)) {
+        Card_t *current = pop(stack);
+
+        // Kiírás
+        printf("Szin: %s, Ertek: %d\n", current->szin, current->ertek);
+
+        // 3. Átmentjük a segédverembe
+        push(&tempStack, current);
+    }
+
+    // 4. Visszapakolunk mindent, hogy a verem állapota ne változzon
+    while (!isEmpty(tempStack)) {
+        push(stack, pop(&tempStack));
+    }
+
+    // A segédverem adminisztrációját töröljük (a kártyákat NE, mert azok kellenek!)
+    destroyStack(&tempStack);
 }
 
-// 2. FELADAT: Maximum keresés az ablakban
-void slidingWindowMaxCircular(int nums[], int n, int k) {
-    // 1. Kezdjük egy nagyon kicsi számmal (vagy az első számított max-szal)
-    int globalMax = -1000000;
-    printf("Output: [ ");
-
-    for (int i = 0; i < n; i++) {
-        Queue q;
-        createQueue(k + 1, &q);
-
-        for (int j = 0; j < k; j++) {
-            int circularIndex = (i + j) % n;
-            enqueue(&q, nums[circularIndex]);
-        }
-
-        // Itt keressük meg az AKTUÁLIS ablak maximumát
-        int currentWindowMax = q.elements[q.front];
-        int idx = q.front;
-        while (true) {
-            if (q.elements[idx] > currentWindowMax) {
-                currentWindowMax = q.elements[idx];
-            }
-            if (idx == q.rear) break;
-            idx = (idx + 1) % q.capacity;
-        }
-
-        printf("%d ", currentWindowMax);
-
-        // 2. Frissítjük a globális maximumot, ha a mostani ablaké nagyobb
-        if (currentWindowMax > globalMax) {
-            globalMax = currentWindowMax;
-        }
-
-        destroyQueue(&q);
-    }
-    // Itt a végén a legeslegnagyobb számot kapod meg
-    printf("] -> Max: %d\n", globalMax);
-}
 
 int main() {
-    // 1. Teszt
-    int timestamps[] = {1, 2, 3, 4, 5, 6, 8, 12, 13};
-    checkTimestamps(timestamps, 9, 5, 3);
+    ifstream input("cards.txt");
+    if (!input.is_open()) {
+        cout << "Hiba: Az cards.txt nem talalhato!" << endl;
+        return 1;
+    }
 
-    printf("\n---\n");
+    int n;
+    input >> n;
 
-    // 2. Teszt
-    int nums[] = {8, 3, -1, -3, 5, 3, 6, 7};
-    slidingWindowMaxCircular(nums, 8, 3);
+    Stack myStack;
+    createStack(35, &myStack);
+
+    for (int i = 0; i < n; i++) {
+        Card_t* temp = new Card_t;
+        int ertek_seged;
+
+        if (input >> ertek_seged >> temp->szin) {
+            temp->ertek = (Szam_t)ertek_seged;
+
+            if (isEmpty(myStack)) {
+                push(&myStack, temp);
+            } else {
+                bool pushed = false;
+                while (!isEmpty(myStack) && !pushed) {
+                    Card_t* secondTemp = pop(&myStack);
+
+                    // C++ string összehasonlítás a char[] tömbökhöz
+                    if (secondTemp->ertek == temp->ertek || std::string(secondTemp->szin) == std::string(temp->szin)) {
+                        push(&myStack, secondTemp); // Ezt megtartjuk
+                        push(&myStack, temp);       // Erre rátesszük az újat
+                        pushed = true;              // Megvagyunk, kilépünk a while-ból
+                    } else {
+                        // Ha nem talál, ezt a lapot végleg töröljük a memóriából
+                        delete secondTemp;
+                    }
+                }
+
+                // Ha végigfutott a verem és nem találtunk egyezést sehol
+                if (!pushed) {
+                    push(&myStack, temp);
+                }
+            }
+            printStackDestructive(&myStack);
+        } else {
+            delete temp;
+        }
+    }
+    input.close();
+
+    cout << "A verem tartalma :" << endl;
+
+    // 4. Kiírás és takarítás
+    while (!isEmpty(myStack)) {
+        Card_t* garbage = pop(&myStack);
+
+        // Kiírjuk az adatokat
+        cout << garbage->szin << " " << garbage->ertek << endl;
+
+        // MOST kell törölni, mert már kivettük a veremből és nincs rá szükség
+        delete garbage;
+    }
+
+    destroyStack(&myStack);
 
     return 0;
 }
