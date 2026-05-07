@@ -54,7 +54,27 @@ int main() {
     Buta(root);
     cout<<endl<<"Okos: ";
     Okos(root);
+    cout<<endl;
 
+    //Torles
+    bool deleted = false;
+    StealingBinaryTreeNode* curr = root;
+    StealingBinaryTreeNode* prev = root;
+    while (!deleted) {
+        if (curr->left->left != nullptr) {
+            curr = curr->left;
+        }else {
+            curr->left = nullptr;
+            //destroyBinaryTree(&curr);
+            deleted = true;
+        }
+    }
+
+
+    cout<<"Buta: ";
+    Buta(root);
+    cout<<endl<<"Okos: ";
+    Okos(root);
 
     destroyBinaryTree(&root);
     return 0;
