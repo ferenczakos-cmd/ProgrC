@@ -77,5 +77,6 @@ int main() {
     Okos(root,0);
 
     destroyBinaryTree(&root);
+
     return 0;
 }
