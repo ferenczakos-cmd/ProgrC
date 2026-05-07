@@ -50,12 +50,11 @@ int main() {
         }
     }
 
-    cout<<"PreOrder: ";
-    preorderTraversal(root);
-    cout<<endl<<"InOrder: ";
-    inorderTraversal(root);
-    cout<<endl<<"PostOrder: ";
-    postorderTraversal(root);
+    cout<<"Buta: ";
+    Buta(root);
+    cout<<endl<<"Okos: ";
+    Okos(root);
+
 
     destroyBinaryTree(&root);
     return 0;
