@@ -3,6 +3,7 @@
 #include <ctime>
 #include "header/constants.h"
 #include "functions/BinaryTree.cpp"
+#include "functions/StealingBinaryTree.cpp"
 #include "functions/array.cpp"
 #include "functions/queue.cpp"
 #include "functions/stack.cpp"
@@ -20,10 +21,11 @@ int main() {
     int a;
     if (!(f >> a)) return 0;
 
-    BinaryTreeNode* root = createNewNode(a);
-
+    StealingBinaryTreeNode* root = createNewNode(6,"alma");
+    insertLeft(root,7,"korte");
+    /*
     while (f >> a) {
-        BinaryTreeNode* curr = root;
+        StealingBinaryTreeNode* curr = root;
         bool inserted = false;
 
         while (!inserted) {
@@ -31,14 +33,14 @@ int main() {
                 if (curr->left != nullptr) {
                     curr = curr->left;
                 } else {
-                    curr->left = createNewNode(a);
+                    curr->left = createNewNode(a,"alma");
                     inserted = true;
                 }
             } else if (a > curr->info) {
                 if (curr->right != nullptr) {
                     curr = curr->right;
                 } else {
-                    curr->right = createNewNode(a);
+                    curr->right = createNewNode(a,"alma");
                     inserted = true;
                 }
             } else {
@@ -46,6 +48,7 @@ int main() {
             }
         }
     }
+    */
     cout<<"PreOrder: ";
     preorderTraversal(root);
     cout<<endl<<"InOrder: ";
