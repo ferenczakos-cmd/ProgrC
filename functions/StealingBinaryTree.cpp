@@ -50,22 +50,29 @@ void postorderTraversal(StealingBinaryTreeNode *root) {
     postorderTraversal(root->right);
     printf("%d ", root->info);
 }
-void Okos(StealingBinaryTreeNode *root) {
-    if(root == NULL) return;
+void Okos(StealingBinaryTreeNode *root,int osszeg) {
+    if(root == NULL) {
+        printf("osszesen: %d",osszeg);
+        return;
+    }
     int i=0;
     while (root->name[i]!='\0') {printf("%c", root->name[i]); i++;}
     printf(" (%d) ", root->info);
+    osszeg += root->info;
 
-    Okos(root->right);
+    Okos(root->right,osszeg);
 }
-void Buta(StealingBinaryTreeNode *root) {
-    if(root == NULL) return;
-
+void Buta(StealingBinaryTreeNode *root,int osszeg) {
+    if(root == NULL) {
+        printf("osszesen: %d",osszeg);
+        return;
+    }
     int i=0;
     while (root->name[i]!='\0') {printf("%c", root->name[i]); i++;}
     printf(" (%d) ", root->info);
+    osszeg += root->info;
 
-    Buta(root->left);
+    Buta(root->left,osszeg);
 }
 void destroyBinaryTree(StealingBinaryTreeNode **root) {
     if((*root)->right == NULL && (*root)->left == NULL)

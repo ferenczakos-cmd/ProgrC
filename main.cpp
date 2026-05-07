@@ -51,9 +51,9 @@ int main() {
     }
 
     cout<<"Buta: ";
-    Buta(root);
+    Buta(root,0);
     cout<<endl<<"Okos: ";
-    Okos(root);
+    Okos(root,0);
     cout<<endl;
 
     //Torles
@@ -72,9 +72,9 @@ int main() {
 
 
     cout<<"Buta: ";
-    Buta(root);
+    Buta(root,0);
     cout<<endl<<"Okos: ";
-    Okos(root);
+    Okos(root,0);
 
     destroyBinaryTree(&root);
     return 0;
