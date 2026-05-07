@@ -1,6 +1,8 @@
+#include <complex.h>
 #include <iostream>
 #include <ctime>
 #include "header/constants.h"
+#include "functions/BinaryTree.cpp"
 #include "functions/array.cpp"
 #include "functions/queue.cpp"
 #include "functions/stack.cpp"
@@ -13,31 +15,44 @@
 
 using namespace std;
 
-struct SzomszedLista {
-    int szamlalo=0;
-    bool latogatott = false;
-    IntArray szomszedok= new IntArray(5);
-};
+int main() {
+    ifstream f("BinaryTree.txt");
+    int a;
+    if (!(f >> a)) return 0;
 
-int main(){
-    ifstream fin;
-    fin.open("input.txt");
-    if (!fin) {
-        cout<<"File not found"<<endl;
-        return 1;
+    BinaryTreeNode* root = createNewNode(a);
+
+    while (f >> a) {
+        BinaryTreeNode* curr = root;
+        bool inserted = false;
+
+        while (!inserted) {
+            if (a < curr->info) {
+                if (curr->left != nullptr) {
+                    curr = curr->left;
+                } else {
+                    curr->left = createNewNode(a);
+                    inserted = true;
+                }
+            } else if (a > curr->info) {
+                if (curr->right != nullptr) {
+                    curr = curr->right;
+                } else {
+                    curr->right = createNewNode(a);
+                    inserted = true;
+                }
+            } else {
+                inserted = true;
+            }
+        }
     }
-    int a, b;
-    fin>>a>>b;
-    SzomszedLista* listak = new SzomszedLista[a];
-    for (int i=0; i<b; i++) {
-        int x,y;
-        fin>>x>>y;
-        listak[x].szamlalo++;
-        listak[x].szomszedok.insertLast(y);
-        listak[y].szamlalo++;
-        listak[y].szomszedok.insertLast(x);
-    }
-    fin.close();
-    delete[] listak;
+    cout<<"PreOrder: ";
+    preorderTraversal(root);
+    cout<<endl<<"InOrder: ";
+    inorderTraversal(root);
+    cout<<endl<<"PostOrder: ";
+    postorderTraversal(root);
+
+    destroyBinaryTree(&root);
     return 0;
 }
