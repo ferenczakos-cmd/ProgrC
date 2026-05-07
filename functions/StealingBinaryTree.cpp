@@ -32,6 +32,9 @@ StealingBinaryTreeNode *insertRight(StealingBinaryTreeNode *root, int newData,ch
 void preorderTraversal(StealingBinaryTreeNode *root) {
     if(root == NULL) return;
     printf("%d ", root->info);
+    int i=0;
+    while (root->name[i]!='\0') {printf("%c", root->name[i]); i++;}
+    printf(" ");
     preorderTraversal(root->left);
     preorderTraversal(root->right);
 }
