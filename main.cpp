@@ -20,27 +20,28 @@ int main() {
     ifstream f("BinaryTree.txt");
     int a;
     if (!(f >> a)) return 0;
-
-    StealingBinaryTreeNode* root = createNewNode(6,"alma");
-    insertLeft(root,7,"korte");
-    /*
-    while (f >> a) {
+    int value;
+    char newName[20];
+    f>>newName>>value;
+    StealingBinaryTreeNode* root = createNewNode(value,newName);
+    for (int i=1;i<a;i++) {
+        f>>newName>>value;
         StealingBinaryTreeNode* curr = root;
         bool inserted = false;
 
         while (!inserted) {
-            if (a < curr->info) {
+            if (value < curr->info) {
                 if (curr->left != nullptr) {
                     curr = curr->left;
                 } else {
-                    curr->left = createNewNode(a,"alma");
+                    curr->left = createNewNode(value,newName);
                     inserted = true;
                 }
-            } else if (a > curr->info) {
+            } else if (value > curr->info) {
                 if (curr->right != nullptr) {
                     curr = curr->right;
                 } else {
-                    curr->right = createNewNode(a,"alma");
+                    curr->right = createNewNode(value,newName);
                     inserted = true;
                 }
             } else {
@@ -48,7 +49,7 @@ int main() {
             }
         }
     }
-    */
+
     cout<<"PreOrder: ";
     preorderTraversal(root);
     cout<<endl<<"InOrder: ";
