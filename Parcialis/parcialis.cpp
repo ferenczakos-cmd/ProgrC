@@ -17,35 +17,51 @@ struct szoba {
     bool latogatott=false;
 };
 
-void Szobaellenorzo(szoba Szobak[],int szobak_szama, int aktualis_szoba) {
+// valamiert nem irja ki a talalt megoldast, pedig a tesztfajlra megkapja a lehetseges megoldast, azt megsem
+void Szobaellenorzo(szoba Szobak[],int szobak_szama, int aktualis_szoba, Queue tesztsor) {
     Szobak[aktualis_szoba].latogatott=true;
+    enqueue(&tesztsor,aktualis_szoba);
     //nezzuk meg, hogy megoldast kaptunk-e
     bool megoldva = true;
-    for (int i=0;i<szobak_szama;i++) {
+    for (int i = 0; i < szobak_szama; i++) {
+        // ha barmelyik szoba nem latogatott, akkor nem jo a megoldas
         if (!Szobak[i].latogatott) {
-            megoldva=false;
+            megoldva = false;
+            break;
         }
     }
+    //testing
+    //display(tesztsor);
     if (megoldva) {
-        //kiirjuk a megoldast
+        cout<<"megoldva: ";
+        display(tesztsor);
+
+    } else {
+        Queue masolat;
+        createQueue(Szobak[aktualis_szoba].szomszedszam + 1, &masolat);
+
+        if (Szobak[aktualis_szoba].szomszedszam!=0) {
+            for (int i = 0; i < Szobak[aktualis_szoba].szomszedszam; i++) {
+                int szomszed = dequeue(&Szobak[aktualis_szoba].SzomszedSzobak);
+
+                if (!Szobak[szomszed].latogatott) {
+                    Szobaellenorzo(Szobak, szobak_szama, szomszed, tesztsor);
+                }
+                enqueue(&Szobak[aktualis_szoba].SzomszedSzobak, szomszed);
+            }
+        }
 
     }
-    else {
-        if (Szobak[aktualis_szoba].szomszedszam==0) {
-            //leallunk, innene nem lehet tovabbmenni;
-        }else {
-            for (int i=0;i<Szobak[aktualis_szoba].szomszedszam;i++) {}
-        }
-    }
+    Szobak[aktualis_szoba].latogatott = false;
 }
 
-int main() {
+void I() {
 
     ifstream f;
     f.open("kastely.txt");
     if (!f) {
         cout<<"Fajl olvasasi hiba...";
-        return 1;
+
     }
     int a,b;
     f>>a>>b;
@@ -67,18 +83,34 @@ int main() {
         //enqueue(&Szobak[y].SzomszedSzobak,x);
     }
     //kiiratas teszteleshez
-    for (int i=0;i<a;i++) {
-        cout<<i<<": Szomszedszobak: ";  display(Szobak[i].SzomszedSzobak ); cout<< "  szobak szama: "<<Szobak[i].szomszedszam<<endl;
-    }
+    //for (int i=0;i<a;i++) {
+    //    cout<<i<<": Szomszedszobak: ";  display(Szobak[i].SzomszedSzobak ); cout<< "  szobak szama: "<<Szobak[i].szomszedszam<<endl;
+    //}
     //induljunk el minden szobabol, hogy lassuk be lehet - e jarni a kastelyt
     for (int i=0;i<a;i++) {
         if (Szobak[i].szomszedszam==0) {
-            cout<<i<<".szobabol nem lehet elindulni sem ";
+            //cout<<i<<".szobabol nem lehet elindulni sem ";
         }else {
             Queue tesztelosor;
-            //createQueue( &tesztelosor,5);
-            Szobaellenorzo(Szobak,a,i);
+            createQueue( 5,&tesztelosor);
+            Szobaellenorzo(Szobak,a,i,tesztelosor);
         }
     }
+    f.close();
+}
+
+
+void II() {
+    ifstream f;
+    f.open("festival.txt");
+    if (!f) {
+        cout<<"Festival olvasasi hiba...";
+    }
+
+}
+
+int main() {
+    //I();
+    II();
     return 0;
 }
