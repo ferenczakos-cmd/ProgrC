@@ -17,8 +17,7 @@ struct szoba {
     bool latogatott=false;
 };
 
-// valamiert nem irja ki a talalt megoldast, pedig a tesztfajlra megkapja a lehetseges megoldast, azt megsem
-void Szobaellenorzo(szoba Szobak[],int szobak_szama, int aktualis_szoba, Queue tesztsor) {
+bool Szobaellenorzo(szoba Szobak[],int szobak_szama, int aktualis_szoba, Queue tesztsor) {
     Szobak[aktualis_szoba].latogatott=true;
     enqueue(&tesztsor,aktualis_szoba);
     //nezzuk meg, hogy megoldast kaptunk-e
@@ -33,8 +32,9 @@ void Szobaellenorzo(szoba Szobak[],int szobak_szama, int aktualis_szoba, Queue t
     //testing
     //display(tesztsor);
     if (megoldva) {
-        cout<<"megoldva: ";
+        cout<<"IGEN: ";
         display(tesztsor);
+        return true;
 
     } else {
         Queue masolat;
@@ -53,6 +53,7 @@ void Szobaellenorzo(szoba Szobak[],int szobak_szama, int aktualis_szoba, Queue t
 
     }
     Szobak[aktualis_szoba].latogatott = false;
+    return false;
 }
 
 void I() {
@@ -87,15 +88,19 @@ void I() {
     //    cout<<i<<": Szomszedszobak: ";  display(Szobak[i].SzomszedSzobak ); cout<< "  szobak szama: "<<Szobak[i].szomszedszam<<endl;
     //}
     //induljunk el minden szobabol, hogy lassuk be lehet - e jarni a kastelyt
+    bool megvanamegoldas=false;
     for (int i=0;i<a;i++) {
         if (Szobak[i].szomszedszam==0) {
             //cout<<i<<".szobabol nem lehet elindulni sem ";
         }else {
-            Queue tesztelosor;
-            createQueue( 5,&tesztelosor);
-            Szobaellenorzo(Szobak,a,i,tesztelosor);
+            if (!megvanamegoldas) {
+                Queue tesztelosor;
+                createQueue( 5,&tesztelosor);
+                megvanamegoldas= Szobaellenorzo(Szobak,a,i,tesztelosor);
+            }
         }
     }
+    if (!megvanamegoldas)cout<<"NEM"<<endl;
     f.close();
 }
 
@@ -106,11 +111,24 @@ void II() {
     if (!f) {
         cout<<"Festival olvasasi hiba...";
     }
+    int N,K,Q;
+    f>>N>>K>>Q;
+    cout<<N<<" "<<K<<" "<<Q<<endl;
+    int A[N][3];
+    for (int i=0;i<N;i++) {
+        f>>A[i][0]>>A[i][1]>>A[i][2];
+        cout<<A[i][0]<<" "<<A[i][1]<<" "<<A[i][2]<<endl;
+    }
+    int B[Q][2];
+    for (int i=0;i<Q;i++) {
+        f>>B[i][0]>>B[i][1];
+        cout<<B[i][0]<<" "<<B[i][1]<<endl;
+    }
 
 }
 
 int main() {
-    //I();
+    I();
     II();
     return 0;
 }
