@@ -1,6 +1,7 @@
 //
 // Created by Crusher on 3/22/2026
 #include "../header/queue.h"
+#include "../header/constants.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
@@ -63,7 +64,7 @@ void display(Queue queue) {
         printf(EMPTY_MESSAGE);
         return;
     }
-    printf("The items of the queue:");
+    //printf("The items of the queue:");
     int i = queue.front;
     do
     {
