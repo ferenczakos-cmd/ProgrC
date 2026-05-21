@@ -12,8 +12,8 @@
 * @param right - pointer a jobb oldali gyermekcsomópontra
 */
 typedef struct StealingBinaryTreeNode {
-    int info;
-    char name[20];
+    int ISBN,counter;
+    char Title[20],Writer[20];
     struct  StealingBinaryTreeNode *left, *right;
 }  StealingBinaryTreeNode;
 
@@ -22,14 +22,14 @@ typedef struct StealingBinaryTreeNode {
 * @param newData - az új csomópont adata
 * @return a lefoglalt csomópont pointere
 */
- StealingBinaryTreeNode *createNewNode(int newData, char newName[]);
+ StealingBinaryTreeNode *createNewNode(int ISBN, char Writer[], char Title[], int counter);
 /**
 * Beszúr egy új csomópontot a gyökér bal oldalára.
 * @param root - a gyökér csomópontja
 * @param newData - az új csomópont adata
 * @return pointer a beszúrt csomópontra
 */
- StealingBinaryTreeNode *insertLeft( StealingBinaryTreeNode *root, int newData,char newName[]);
+ StealingBinaryTreeNode *insertLeft( StealingBinaryTreeNode *root, int newData,char newName[], char Title[], int counter);
 /**
 * Beszúr egy új csomópontot a gyökér jobb oldalára.
 
@@ -38,7 +38,7 @@ typedef struct StealingBinaryTreeNode {
 * @param newData - az új csomópont adata
 * @return pointer a beszúrt csomópontra
 */
- StealingBinaryTreeNode *insertRight( StealingBinaryTreeNode *root, int newData,char newName[]);
+ StealingBinaryTreeNode *insertRight( StealingBinaryTreeNode *root, int newData,char newName[], char Title[], int counter);
 /**
 * Bejárás előrendben (GYÖKÉR-BAL-JOBB sorrend).
 * @param root - a bináris fa gyökércsomópontja

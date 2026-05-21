@@ -12,7 +12,7 @@ typedef struct {
     int capacity;
     int front;
     int rear;
-    int *elements;
+    float *elements;
 } Queue;
 /**
 * Létrehozza a körkörös sort, memóriát foglal az elemek számára.

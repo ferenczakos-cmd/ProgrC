@@ -1,16 +1,19 @@
-//
-// Created by Crusher on 3/22/2026
+
+#include <fstream>
+#include <iostream>
+
 #include "../header/queue.h"
 #include "../header/constants.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
 
+using namespace std;
 
 void createQueue(int capacity, Queue *queue) {
     queue->capacity = capacity;
     queue->front = queue->rear = -1;
-    queue->elements = (int*) calloc(queue->capacity, sizeof (int));
+    queue->elements = (float*) calloc(queue->capacity, sizeof (int));
     if(!queue->elements) {
         printf(MEMORY_ALLOCATION_ERROR_MESSAGE);
         exit(MEMORY_ALLOCATION_ERROR_CODE);
@@ -32,7 +35,7 @@ bool isFull(Queue queue) {
 bool isEmpty(Queue queue) {
     return queue.front == -1;
 }
-void enqueue(Queue *queue, int item) {
+void enqueue(Queue *queue, float item) {
     if(isFull(*queue)) {
         printf(FULL_MESSAGE);
         return;
@@ -58,9 +61,10 @@ int dequeue(Queue *queue) {
     }
     return save;
 }
+
 void display(Queue queue) {
     if (isEmpty(queue)) {
-        printf("The queue is ");
+        printf("Nicsenek meresi addatok...\n");
         printf(EMPTY_MESSAGE);
         return;
     }
@@ -68,9 +72,111 @@ void display(Queue queue) {
     int i = queue.front;
     do
     {
-        printf("%i ", queue.elements[i]);
+        cout<<queue.elements[i]<<endl;
         i = (i+1) % queue.capacity;
     }while(i != queue.rear);
-    printf("%i ", queue.elements[i]);
+    cout<<queue.elements[i]<<endl;
     printf("\n");
+}
+
+void atlag(Queue queue) {
+    if (isEmpty(queue)) {
+        printf("Nicsenek meresi addatok...\n");
+        printf(EMPTY_MESSAGE);
+        return;
+    }
+
+    float sum = 0; int counter = 0;
+    int i = queue.front;
+    do
+    {
+        sum += queue.elements[i];
+        counter++;
+        i = (i+1) % queue.capacity;
+    }while(i != queue.rear);
+    sum += queue.elements[i];
+    counter++;
+
+    if (counter==0) {
+        cout<<"Error(division by 0) returning... "<<endl;
+        return;
+    }
+    float atlag = sum / counter;
+    cout<<"Atlag: "<<atlag<<endl;
+
+}
+
+void kics_nagy(Queue queue) {
+    if (isEmpty(queue)) {
+        printf("Nicsenek meresi addatok...\n");
+        printf(EMPTY_MESSAGE);
+        return;
+    }
+
+
+    int i = queue.front;
+    float kicsi= queue.elements[i];
+    float nagy = queue.elements[i];
+    do
+    {
+        if (queue.elements[i] < kicsi) {
+            kicsi = queue.elements[i];
+        }
+        if (queue.elements[i] >nagy) {
+            nagy = queue.elements[i];
+        }
+
+        i = (i+1) % queue.capacity;
+    }while(i != queue.rear);
+
+    if (queue.elements[i] < kicsi) {
+        kicsi = queue.elements[i];
+    }
+    if (queue.elements[i] >nagy) {
+        nagy = queue.elements[i];
+    }
+
+    cout<<"Kicsi: "<<kicsi<<endl;
+    cout<<"Nagy: "<<nagy<<endl;
+}
+
+void novekvo(Queue queue) {
+    if (isEmpty(queue)) {
+        printf("Nicsenek meresi addatok...\n");
+        printf(EMPTY_MESSAGE);
+        return;
+    }
+
+    bool no = true;
+
+    int i = queue.front;
+    float prev_element= queue.elements[i];
+    if (i+1!=queue.rear) {
+        i++;
+    }else {
+        printf("Csak egy meresi adat van...\n");
+        return;
+    }
+
+    do
+    {
+        if (queue.elements[i]<=prev_element) {
+            no = false;
+        }
+        prev_element = queue.elements[i];
+
+        i = (i+1) % queue.capacity;
+    }while(i != queue.rear);
+
+    if (queue.elements[i]<=prev_element) {
+        no = false;
+    }
+    prev_element = queue.elements[i];
+
+    if (no) {
+        printf("A meresi adatok novekednek!");
+    }else {
+        printf("A meresi adatok nem novekednek!");
+    }
+
 }
