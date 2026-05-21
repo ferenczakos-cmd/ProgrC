@@ -11,72 +11,57 @@
 #include "functions/stringQueue.cpp"
 #include "functions/List.cpp"
 #include "functions/CircularList.cpp"
+#include "functions/hash_table.cpp"
 #include <fstream>
 #include <filesystem>
 
 using namespace std;
 
+// Az éleket reprezentáló struktúra
+
+
 int main() {
-    ifstream f("BinaryTree.txt");
-    int a;
-    if (!(f >> a)) return 0;
-    int value;
-    char newName[20];
-    f>>newName>>value;
-    StealingBinaryTreeNode* root = createNewNode(value,newName);
-    for (int i=1;i<a;i++) {
-        f>>newName>>value;
-        StealingBinaryTreeNode* curr = root;
-        bool inserted = false;
+    // Create root
+    StealingBinaryTreeNode *root = createNewNode(100, "Boss");
 
-        while (!inserted) {
-            if (value < curr->info) {
-                if (curr->left != nullptr) {
-                    curr = curr->left;
-                } else {
-                    curr->left = createNewNode(value,newName);
-                    inserted = true;
-                }
-            } else if (value > curr->info) {
-                if (curr->right != nullptr) {
-                    curr = curr->right;
-                } else {
-                    curr->right = createNewNode(value,newName);
-                    inserted = true;
-                }
-            } else {
-                inserted = true;
-            }
-        }
-    }
+    // Left side
+    StealingBinaryTreeNode *left1 = insertLeft(root, 30, "Tom");
+    insertLeft(left1, 20, "Jerry");
+    insertRight(left1, 50, "Mike");
 
-    cout<<"Buta: ";
-    Buta(root,0);
-    cout<<endl<<"Okos: ";
-    Okos(root,0);
-    cout<<endl;
+    // Right side
+    StealingBinaryTreeNode *right1 = insertRight(root, 60, "Anna");
+    insertLeft(right1, 40, "Kate");
+    insertRight(right1, 70, "John");
 
-    //Torles
-    bool deleted = false;
-    StealingBinaryTreeNode* curr = root;
-    StealingBinaryTreeNode* prev = root;
-    while (!deleted) {
-        if (curr->left->left != nullptr) {
-            curr = curr->left;
-        }else {
-            curr->left = nullptr;
-            //destroyBinaryTree(&curr);
-            deleted = true;
-        }
-    }
+    // Traversals
+    printf("Preorder Traversal:\n");
+    preorderTraversal(root);
+    printf("\n\n");
 
+    printf("Inorder Traversal:\n");
+    inorderTraversal(root);
+    printf("\n\n");
 
-    cout<<"Buta: ";
-    Buta(root,0);
-    cout<<endl<<"Okos: ";
-    Okos(root,0);
+    printf("Postorder Traversal:\n");
+    postorderTraversal(root);
+    printf("\n\n");
 
+    // Custom functions
+    printf("Okos path:\n");
+    Okos(root, 0);
+    printf("\n\n");
+
+    printf("Buta path:\n");
+    Buta(root, 0);
+    printf("\n\n");
+
+    // Free memory
     destroyBinaryTree(&root);
+
+    if(root == NULL) {
+        printf("Tree successfully destroyed.\n");
+    }
 
     return 0;
 }
