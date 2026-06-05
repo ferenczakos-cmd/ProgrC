@@ -1,21 +1,36 @@
 #ifndef HASH_STATIC_HASH_TABLE_H
 #define HASH_STATIC_HASH_TABLE_H
-#define CAPACITY 31
+#define CAPACITY 211
+
+#include <iostream>
+#include <cstdlib>
+#include <fstream>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 /**
 * Egy hasító tábla elemet reprezentáló struktúra.
 * @param key - az elem kulcsa
 * @param data - az elem adata
 */
+typedef struct Diak {
+    int Id;
+    char nev[50],osztaly[10];
+    float jegy;
+};
 typedef struct {
     int key;
-    char *data;
+    Diak diak;
 } HashItem;
 /**
 * Egy hasító tábla struktúra.
 * @param items - pointer a hash tábla elemeire
 * @param size - a hasító tábla aktuális elemeinek száma
 */
+
+
+
 typedef struct {
     HashItem *items;
     int size;
@@ -24,7 +39,7 @@ typedef struct {
 /**
 * Dummy adat az üres elemek megjelölésére.
 */
-static HashItem dummyData = {-1, NULL};
+static HashItem dummyData = {-1, NULL,NULL,NULL,NULL};
 /**
 * Memóriát foglal egy hasító táblához a megadott mérettel.
 * @param pHashTable - pointer a hasító tábla struktúrájához
