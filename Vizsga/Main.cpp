@@ -88,18 +88,26 @@ void I() {
     cout<<"Eredmenyek:"<<endl;
     ifstream g;
     g.open("results.txt");
+    int szamlalo = 0;
     string U_sor;
     while (g>>U_sor) {
         int ID =0;
-        ID-=(48-sor[0])*1000+(48-sor[1])*100+(48-sor[2])*10+(48-sor[3]);
+        ID-=(48-U_sor[0])*1000+(48-U_sor[1])*100+(48-U_sor[2])*10+(48-U_sor[3]);
         int Jegy=0;
-        Jegy-=(48-sor[5])*10+(48-sor[6])*1;
+        Jegy-=(48-U_sor[5])*10+(48-U_sor[6])*1;
 
-        cout<<U_sor<<" "<<ID<<" "<<Jegy<<endl;
+        //cout<<U_sor<<" "<<ID<<" "<<Jegy<<endl;
+
+        int szamjegyosszeg=48-sor[0]+48-sor[1]+48-sor[2]+48-sor[3];
+        szamjegyosszeg=-szamjegyosszeg;
+
+        if (!updateNoteAt(table,szamjegyosszeg,Jegy)) {
+            counter++;
+        }
 
 
     }
-
+    cout<<"Eredmenyek: "<<counter<<". diak ereddmenye veszett el..."<<endl;
 
     g.close();
 
